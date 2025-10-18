@@ -1,0 +1,178 @@
+{% extends "app/base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-3xl font-bold mb-8 text-center">Admin Dashboard</h1>
+
+    <!-- Communities Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- Approved Communities -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">✅ Approved Communities</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-200 text-sm">
+                    <thead class="bg-gray-100 text-gray-700">
+                        <tr>
+                            <th class="px-4 py-2 border">Name</th>
+                            <th class="px-4 py-2 border">Category</th>
+                            <th class="px-4 py-2 border">Location</th>
+                            <th class="px-4 py-2 border">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for community in approved_communities %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 border">{{ community.name }}</td>
+                            <td class="px-4 py-2 border">{{ community.category }}</td>
+                            <td class="px-4 py-2 border">{{ community.location }}</td>
+                            <td class="px-4 py-2 border text-center">
+                                <a href="{{ community.get_absolute_url }}" 
+                                   class="text-green-600 hover:underline">View</a> | 
+                                <a href="" 
+                                   class="text-blue-600 hover:underline">Edit</a> | 
+                                <form method="post" action="{% url 'dashboard' %}" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="type" value="community">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="id" value="{{ community.id }}">
+                                    <button type="submit" class="text-red-600 hover:underline">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center py-4">No approved communities yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pending Communities -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">🕒 Pending Community Submissions</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-200 text-sm">
+                    <thead class="bg-gray-100 text-gray-700">
+                        <tr>
+                            <th class="px-4 py-2 border">Name</th>
+                            <th class="px-4 py-2 border">Category</th>
+                            <th class="px-4 py-2 border">Submitted At</th>
+                            <th class="px-4 py-2 border">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for submission in pending_submissions %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 border">{{ submission.name }}</td>
+                            <td class="px-4 py-2 border">{{ submission.category }}</td>
+                            <td class="px-4 py-2 border">{{ submission.submitted_at|date:"M d, Y" }}</td>
+                            <td class="px-4 py-2 border text-center">
+                                <form method="post" action="{% url 'dashboard' %}" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="type" value="submission">
+                                    <input type="hidden" name="action" value="approve">
+                                    <input type="hidden" name="id" value="{{ submission.id }}">
+                                    <button type="submit" class="text-green-600 hover:underline">Approve</button>
+                                </form> |
+                                <form method="post" action="{% url 'dashboard' %}" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="type" value="submission">
+                                    <input type="hidden" name="action" value="reject">
+                                    <input type="hidden" name="id" value="{{ submission.id }}">
+                                    <button type="submit" class="text-red-600 hover:underline">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center py-4">No pending submissions.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Categories Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+
+        <!-- Approved Categories -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">✅ Approved Categories</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-200 text-sm">
+                    <thead class="bg-gray-100 text-gray-700">
+                        <tr>
+                            <th class="px-4 py-2 border">Name</th>
+                            <th class="px-4 py-2 border">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in approved_categories %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 border">{{ category.name }}</td>
+                            <td class="px-4 py-2 border text-center">
+                                <a href="" 
+                                   class="text-blue-600 hover:underline">Edit</a> |
+                                <form method="post" action="{% url 'dashboard' %}" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="type" value="category">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="id" value="{{ category.id }}">
+                                    <button type="submit" class="text-red-600 hover:underline">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-center py-4">No approved categories yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pending Categories -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">🕒 Pending Categories</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-200 text-sm">
+                    <thead class="bg-gray-100 text-gray-700">
+                        <tr>
+                            <th class="px-4 py-2 border">Name</th>
+                            <th class="px-4 py-2 border">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in pending_categories %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 border">{{ category.name }}</td>
+                            <td class="px-4 py-2 border text-center">
+                                <form method="post" action="{% url 'dashboard' %}" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="type" value="category">
+                                    <input type="hidden" name="action" value="approve">
+                                    <input type="hidden" name="id" value="{{ category.id }}">
+                                    <button type="submit" class="text-green-600 hover:underline">Approve</button>
+                                </form> |
+                                <form method="post" action="{% url 'dashboard' %}" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="type" value="category">
+                                    <input type="hidden" name="action" value="reject">
+                                    <input type="hidden" name="id" value="{{ category.id }}">
+                                    <button type="submit" class="text-red-600 hover:underline">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="2" class="text-center py-4">No pending categories.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Community Hub{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+<!-- ----------------------
+     Top Navbar
+---------------------- -->
+<nav class="bg-white shadow">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a href="{% url 'home' %}" class="text-2xl font-bold text-purple-600">Community Hub</a>
+      </div>
+
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex items-center space-x-8">
+        <a href="{% url 'home' %}" class="text-gray-700 hover:text-purple-600 font-medium">Home</a>
+        
+        <!-- Communities Dropdown -->
+        <div class="relative">
+          <button id="desktop-dropdown-btn" class="text-gray-700 hover:text-purple-600 flex items-center font-medium focus:outline-none">
+            Communities
+            <svg id="desktop-chevron" class="w-4 h-4 ml-1 transform transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <ul id="desktop-dropdown" class="absolute left-0 mt-2 w-48 bg-white border rounded shadow-lg hidden">
+            {% for category in categories %}
+            <li>
+              <a href="{% url 'communities' %}?category={{ category.slug }}" 
+                 class="block px-4 py-2 hover:bg-gray-100">
+                {{ category.name }}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <a href="" class="text-gray-700 hover:text-purple-600 font-medium">News & Events</a>
+        
+        <ul class="flex items-center space-x-4 ml-auto">
+          {% if user.is_authenticated %}
+              {% if user.is_staff or user.is_superuser %}
+              <li>
+                  <a href="{% url 'dashboard' %}" class="text-gray-700 hover:text-purple-600 font-medium">Dashboard</a>
+              </li>
+              {% endif %}
+              <li>
+                  <a href="{% url 'logout' %}" class="text-gray-700 hover:text-purple-600 font-medium">Logout</a>
+              </li>
+          {% else %}
+              <li>
+                  <a href="{% url 'login' %}" class="text-gray-700 hover:text-purple-600 font-medium">Login</a>
+              </li>
+          {% endif %}
+        </ul>
+      </div>
+      
+      <!-- Mobile menu button -->
+      <div class="md:hidden">
+        <button id="mobile-menu-btn" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-purple-600 hover:bg-gray-100 focus:outline-none">
+          <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="md:hidden hidden px-2 pb-3 space-y-1">
+    <a href="{% url 'home' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Home</a>
+    
+    <!-- Mobile Dropdown -->
+    <div>
+      <button onclick="toggleMobileDropdown()" class="w-full text-left px-4 py-2 flex justify-between items-center text-gray-700 hover:bg-gray-100">
+        Communities
+        <svg id="mobile-chevron" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+      <ul id="mobile-dropdown" class="hidden pl-4">
+        {% for category in categories %}
+        <li>
+          <a href="{% url 'communities' %}?category={{ category.slug }}" class="block px-4 py-2 hover:bg-gray-100">
+            {{ category.name }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <a href="" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">News & Events</a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'logout' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+    {% else %}
+      <a href="{% url 'login' %}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Login</a>
+    {% endif %}
+  </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<!-- Footer -->
+<footer class="bg-gray-100 text-center py-4 mt-8">
+    <p class="text-sm text-gray-600">
+        &copy; {{ now.year }} Community Hub |
+        <a href="mailto:aivasmm101@gmail.com" class="text-purple-600 hover:underline inline-flex items-center">
+            Contact Me
+        </a>
+    </p>
+</footer>
+
+<!-- Scripts -->
+<script>
+  // Mobile menu toggle
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  mobileMenuBtn.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
+
+  // Mobile dropdown toggle
+  const mobileDropdown = document.getElementById('mobile-dropdown');
+  const mobileChevron = document.getElementById('mobile-chevron');
+  function toggleMobileDropdown() {
+    mobileDropdown.classList.toggle('hidden');
+    mobileChevron.classList.toggle('rotate-180');
+  }
+
+  // Desktop dropdown toggle
+  const desktopDropdownBtn = document.getElementById('desktop-dropdown-btn');
+  const desktopDropdown = document.getElementById('desktop-dropdown');
+  const desktopChevron = document.getElementById('desktop-chevron');
+
+  desktopDropdownBtn.addEventListener('click', () => {
+    desktopDropdown.classList.toggle('hidden');
+    desktopChevron.classList.toggle('rotate-180');
+  });
+
+  // Close dropdown if clicked outside
+  document.addEventListener('click', (e) => {
+    if (!desktopDropdownBtn.contains(e.target) && !desktopDropdown.contains(e.target)) {
+      desktopDropdown.classList.add('hidden');
+      desktopChevron.classList.remove('rotate-180');
+    }
+  });
+</script>
+
+</body>
+</html>
